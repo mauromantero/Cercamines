@@ -101,117 +101,169 @@ function renderitzar() {
             const div = document.createElement('div');
             div.classList.add('cell');
 
-            // Si a la matriu hi ha un 1, afegim la classe 'active' (color verd)
-            if (matriu[i][j] === 1) {
-                div.classList.add('escondida');
-            }
-
-            if (matriu[i][j] === 'X') {
-                div.classList.add('bomba');
-            }
-
-            if (matriu[i][j] === 3) {
+            if(resposta[i][j] === 'B'){
                 div.classList.add('bandera');
+                div.innerText = '🚩';
             }
 
-            if (matriu[i][j] === 4) {
+            if(resposta[i][j] !== 'X' && resposta[i][j] !== '' && resposta[i][j] !== 'B') {
                 div.classList.add('pulsado');
-            }
+                p = document.createElement('p')
+                let bombas = resposta[i][j];
+                p.textContent = resposta[i][j];
+                console.log(i,j);
+                switch(bombas){
+                    case 0: p.style.color = '#7ec580'; break
+                    case 1: p.style.color = '#b87c7c'; break
+                    case 2: p.style.color = '#cf6c6c'; break
+                    case 3: p.style.color = '#cd5c5c'; break
+                    case 4: p.style.color = '#b15151'; break
+                    case 5: p.style.color = '#b64141'; break
+                    case 6: p.style.color = '#c14040'; break
+                    case 7: p.style.color = '#a62e2e'; break
+                    case 8: p.style.color = '#cf1b1b'; break
+                }
+                console.log(i,j);
 
-            div.addEventListener('click', function () {
+                div.appendChild(p)
+                container.appendChild(div);
 
-                if(!div.classList.contains('bandera')) {
-                    if (matriu[i][j] === 1) {
-                        document.getElementById('perder').innerHTML = 'Has perdut'
-                        document.getElementById('info').innerHTML = ''
-                        document.getElementById('banderas').innerHTML = ''
-                        banderas= 15
-                        mostrarResposta()
-                        setTimeout(function () {
-                            inicialitzarMatriu();
-                            numero = 0
-                            banderaspulsadas = 0
-                            banderas = 15
-                            document.getElementById('perder').innerHTML = ''
-                            colocarMines()
-                            renderitzar();
-                        }, 1000)
+            } else{
+                // Si a la matriu hi ha un 1, afegim la classe 'active' (color verd)
+                if (matriu[i][j] === 1) {
+                    div.classList.add('escondida');
+                }
 
-                    } else if (matriu[i][j] === 0) {
-                        div.classList.add('pulsado');
+                if (matriu[i][j] === 'X') {
+                    div.classList.add('bomba');
+                }
 
-                        if (resposta[i][j] === '') {
-                            numero++
-                            console.log(numero)
-                            let bombas = calculos(i, j)
-                            resposta[i][j] = bombas;
-                            p = document.createElement("p");
+                if (matriu[i][j] === 'B') {
+                    div.classList.add('bandera');
+                    div.innerHTML = '🚩'
+                }
 
-                            if(bombas===0){
+                if (matriu[i][j] === 4) {
+                    div.classList.add('pulsado');
+                }
+                div.addEventListener('click', function () {
 
+                    if(!div.classList.contains('bandera')) {
+                        if (matriu[i][j] === 1) {
+                            document.getElementById('perder').innerHTML = 'Has perdut'
+                            document.getElementById('info').innerHTML = ''
+                            document.getElementById('banderas').innerHTML = ''
+                            banderas= 15
+                            mostrarResposta()
+                            setTimeout(function () {
+                                inicialitzarMatriu();
+                                numero = 0
+                                banderaspulsadas = 0
+                                banderas = 15
+                                document.getElementById('perder').innerHTML = ''
+                                colocarMines()
+                                renderitzar();
+                            }, 1000)
+
+                        } else if (matriu[i][j] === 0) {
+                            div.classList.add('pulsado');
+
+                            if (resposta[i][j] === '') {
+                                console.log(numero)
+                                let bombas = calculos(i, j)
+                                resposta[i][j] = bombas;
+                                p = document.createElement("p");
+
+
+                                switch(bombas){
+                                    case 0: p.style.color = '#7ec580'; break
+                                    case 1: p.style.color = '#b87c7c'; break
+                                    case 2: p.style.color = '#cf6c6c'; break
+                                    case 3: p.style.color = '#cd5c5c'; break
+                                    case 4: p.style.color = '#b15151'; break
+                                    case 5: p.style.color = '#b64141'; break
+                                    case 6: p.style.color = '#c14040'; break
+                                    case 7: p.style.color = '#a62e2e'; break
+                                    case 8: p.style.color = '#cf1b1b'; break
+                                }
+
+                                p.textContent = bombas;
+                                div.appendChild(p);
+
+                                if(bombas===0){
+                                    if(i-1>=0){
+                                        resposta[i - 1][j - 1] = calculos(i - 1, j - 1);
+                                        resposta[i - 1][j] = calculos(i - 1, j);
+                                        resposta[i - 1][j + 1] = calculos(i - 1, j + 1);
+                                        numero++
+                                    }
+
+                                    if(i+1<mida){
+                                        resposta[i + 1][j + 1] = calculos(i + 1, j + 1);
+                                        resposta[i + 1][j - 1] = calculos(i + 1, j - 1);
+                                        resposta[i + 1][j] = calculos(i + 1, j);
+                                        numero++
+                                    }
+                                    resposta[i][j - 1] = calculos(i, j - 1);
+                                    resposta[i][j + 1] = calculos(i, j + 1);
+                                    numero++
+
+                                    console.log(resposta);
+                                    renderitzar()
+
+                                }
+                            }
+                        }
+
+                        if(banderas >= 0){
+                            if(numero + banderaspulsadas === mida*mida){
+                                document.getElementById('perder').innerHTML = 'HAS GUANYAT'
+                                document.getElementById('info').innerHTML = ''
+                                document.getElementById('banderas').innerHTML = ''
+                                banderas= 15
+                                mostrarResposta()
+                                setTimeout(function () {
+                                    inicialitzarMatriu();
+                                    numero = 0
+                                    banderaspulsadas = 0
+                                    banderas = 15
+                                    document.getElementById('perder').innerHTML = ''
+                                    colocarMines()
+                                    renderitzar();
+                                }, 1000)
                             }
 
-                            switch(bombas){
-                                case 0: p.style.color = '#7ec580'; break
-                                case 1: p.style.color = '#b87c7c'; break
-                                case 2: p.style.color = '#cf6c6c'; break
-                                case 3: p.style.color = '#cd5c5c'; break
-                                case 4: p.style.color = '#b15151'; break
-                                case 5: p.style.color = '#b64141'; break
-                                case 6: p.style.color = '#c14040'; break
-                                case 7: p.style.color = '#a62e2e'; break
-                                case 8: p.style.color = '#cf1b1b'; break
-                            }
-
-                            p.textContent = bombas;
-                            div.appendChild(p);
                         }
                     }
 
-                    if(banderas >= 0){
-                        if(numero + banderaspulsadas === mida*mida){
-                        document.getElementById('perder').innerHTML = 'HAS GUANYAT'
-                        document.getElementById('info').innerHTML = ''
-                        document.getElementById('banderas').innerHTML = ''
-                        banderas= 15
-                        mostrarResposta()
-                        setTimeout(function () {
-                            inicialitzarMatriu();
-                            numero = 0
-                            banderaspulsadas = 0
-                            banderas = 15
-                            document.getElementById('perder').innerHTML = ''
-                            colocarMines()
-                            renderitzar();
-                        }, 1000)
+
+                })
+                div.addEventListener('contextmenu', function () {
+
+                    event.preventDefault();
+                    if(!div.classList.contains('pulsado')){
+                        if (div.classList.contains('bandera')) {
+                            resposta[i][j] = ''
+                            div.classList.remove('bandera');
+                            banderas++
+                            banderaspulsadas--
+                            div.innerHTML=''
+                        }else if(!div.classList.contains('bandera')) {
+                            resposta[i][j] = 'B'
+                            div.classList.add('bandera');
+                            div.innerHTML = '🚩'
+                            banderaspulsadas++
+                            banderas--
+                            console.log(banderaspulsadas)
+                        }
                     }
+                    document.getElementById('banderas').innerHTML = '🚩:' + banderas
+                })
+                container.appendChild(div);
 
-                    }
-                }
-
-
-            })
-            container.appendChild(div);
-
-            div.addEventListener('contextmenu', function () {
-
-                event.preventDefault();
-            if(!div.classList.contains('pulsado')){
-                    if (div.classList.contains('bandera')) {
-                        div.classList.remove('bandera');
-                        banderas++
-                        banderaspulsadas--
-                        div.innerHTML=''
-                }else if(!div.classList.contains('bandera')) {
-                        div.classList.add('bandera');
-                        div.innerHTML = '🚩'
-                        banderaspulsadas++
-                        banderas--
-                        console.log(banderaspulsadas)
-                }
             }
-                document.getElementById('banderas').innerHTML = '🚩:' + banderas
-            })
+
+
         }
     }
 }
